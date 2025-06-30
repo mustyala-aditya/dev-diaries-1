@@ -1,20 +1,14 @@
 import React, { useState } from 'react';
-import { format } from 'date-fns';
 import { Heart, FileHeart as HeartFilled, ExternalLink, Calendar, Tag } from 'lucide-react';
 import { Card } from '../../types';
+import { getContentPreview } from '../../utils/cardUtils';
+import { format } from '../../utils/dateUtils';
 
 interface CardPreviewProps {
   card: Card;
   onToggleFavorite: (id: string) => void;
   onClick: (card: Card) => void;
 }
-
-// Helper function to normalize dates to avoid timezone issues
-const normalizeDate = (date: Date | string): Date => {
-  const d = typeof date === 'string' ? new Date(date) : date;
-  // Create a new date using just the year, month, and day to avoid timezone issues
-  return new Date(d.getFullYear(), d.getMonth(), d.getDate());
-};
 
 export const CardPreview: React.FC<CardPreviewProps> = ({
   card,
@@ -23,19 +17,10 @@ export const CardPreview: React.FC<CardPreviewProps> = ({
 }) => {
   const [isHovered, setIsHovered] = useState(false);
 
-  const getContentPreview = (content: string) => {
-    // Strip HTML tags and get plain text preview
-    const textContent = content.replace(/<[^>]*>/g, '');
-    return textContent.substring(0, 120) + (textContent.length > 120 ? '...' : '');
-  };
-
   const handleFavoriteClick = (e: React.MouseEvent) => {
     e.stopPropagation();
     onToggleFavorite(card.id);
   };
-
-  // Use the same normalization for consistency
-  const displayDate = normalizeDate(card.updatedAt);
 
   return (
     <div
@@ -68,7 +53,7 @@ export const CardPreview: React.FC<CardPreviewProps> = ({
             <div className="flex items-center space-x-3 text-sm text-gray-500">
               <div className="flex items-center space-x-1">
                 <Calendar className="h-3 w-3" />
-                <span>{format(displayDate, 'MMM d, yyyy')}</span>
+                <span>{format(card.updatedAt, 'MMM d, yyyy')}</span>
               </div>
               {card.tags.length > 0 && (
                 <div className="flex items-center space-x-1">
