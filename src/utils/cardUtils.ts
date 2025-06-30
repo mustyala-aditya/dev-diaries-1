@@ -39,11 +39,16 @@ export const filterCardsByTags = (cards: Card[], selectedTags: string[]): Card[]
 };
 
 export const groupCardsByDate = (cards: Card[]): [string, Card[]][] => {
+  console.log('🔍 Grouping cards by date. Input cards:', cards.length);
+  
   const groups: { [key: string]: Card[] } = {};
   
-  cards.forEach(card => {
+  cards.forEach((card, index) => {
     // Use consistent date formatting - YYYY-MM-DD format using our format utility
     const dateKey = format(card.updatedAt, 'yyyy-MM-dd');
+    
+    console.log(`📅 Card ${index + 1}: "${card.title}" -> Date: ${dateKey}`);
+    
     if (!groups[dateKey]) {
       groups[dateKey] = [];
     }
@@ -51,7 +56,15 @@ export const groupCardsByDate = (cards: Card[]): [string, Card[]][] => {
   });
 
   // Sort groups by date (newest first)
-  return Object.entries(groups).sort(([a], [b]) => 
+  const sortedGroups = Object.entries(groups).sort(([a], [b]) => 
     new Date(b).getTime() - new Date(a).getTime()
   );
+
+  console.log('📊 Final groups:', sortedGroups.map(([date, cards]) => ({
+    date,
+    cardCount: cards.length,
+    cardTitles: cards.map(c => c.title)
+  })));
+
+  return sortedGroups;
 };

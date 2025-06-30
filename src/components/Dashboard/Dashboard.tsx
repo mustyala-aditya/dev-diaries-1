@@ -45,9 +45,9 @@ export const Dashboard: React.FC<DashboardProps> = ({ searchQuery = '' }) => {
   // Get user-specific cards with normalized dates
   const userCards = useMemo(() => {
     if (!user) return [];
-    return normalizeCardsDates(
-      cards.filter(card => card.userId === user.id)
-    );
+    const filtered = cards.filter(card => card.userId === user.id);
+    console.log('👤 User cards found:', filtered.length);
+    return normalizeCardsDates(filtered);
   }, [cards, user]);
 
   // Get cards with normalized dates for other functions
@@ -72,16 +72,27 @@ export const Dashboard: React.FC<DashboardProps> = ({ searchQuery = '' }) => {
   const filteredCards = useMemo(() => {
     const currentQuery = searchQuery || localSearchQuery || globalSearchQuery;
     
-    let filtered = filterCardsBySearch(userCards, currentQuery);
-    filtered = filterCardsByTags(filtered, selectedTags);
+    console.log('🔍 Filtering cards. Query:', currentQuery, 'Selected tags:', selectedTags);
+    console.log('📋 Starting with user cards:', userCards.length);
     
-    return filtered.sort((a, b) => b.updatedAt.getTime() - a.updatedAt.getTime());
+    let filtered = filterCardsBySearch(userCards, currentQuery);
+    console.log('📋 After search filter:', filtered.length);
+    
+    filtered = filterCardsByTags(filtered, selectedTags);
+    console.log('📋 After tag filter:', filtered.length);
+    
+    const sorted = filtered.sort((a, b) => b.updatedAt.getTime() - a.updatedAt.getTime());
+    console.log('📋 Final filtered and sorted cards:', sorted.length);
+    
+    return sorted;
   }, [userCards, searchQuery, localSearchQuery, globalSearchQuery, selectedTags]);
 
-  const groupedCards = useMemo(() => 
-    groupCardsByDate(filteredCards), 
-    [filteredCards]
-  );
+  const groupedCards = useMemo(() => {
+    console.log('🗂️ Creating grouped cards from filtered cards:', filteredCards.length);
+    const grouped = groupCardsByDate(filteredCards);
+    console.log('🗂️ Grouped result:', grouped.length, 'groups');
+    return grouped;
+  }, [filteredCards]);
 
   const handleNewCard = () => navigate('/editor');
   const handleCardClick = (card: Card) => navigate(`/editor/${card.id}`);
@@ -143,6 +154,21 @@ export const Dashboard: React.FC<DashboardProps> = ({ searchQuery = '' }) => {
     );
   }, [filteredCards, favoriteCards, recentCards, activeView]);
 
+  // Debug logging for All Cards view
+  useEffect(() => {
+    if (activeView === 'all') {
+      console.log('📊 ALL CARDS VIEW DEBUG:');
+      console.log('- Total user cards:', userCards.length);
+      console.log('- Filtered cards:', filteredCards.length);
+      console.log('- Grouped cards:', groupedCards.length, 'groups');
+      console.log('- Groups detail:', groupedCards.map(([date, cards]) => ({
+        date,
+        count: cards.length,
+        titles: cards.map(c => c.title)
+      })));
+    }
+  }, [activeView, userCards.length, filteredCards.length, groupedCards]);
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
       <div className="space-y-8 pb-12">
@@ -179,7 +205,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ searchQuery = '' }) => {
                   className="space-y-6"
                 >
                   <h2 className="text-3xl font-bold text-white px-4">
-                    🔍 Search Results
+                    🔍 Search Results ({filteredCards.length} cards)
                   </h2>
 
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
@@ -269,6 +295,11 @@ export const Dashboard: React.FC<DashboardProps> = ({ searchQuery = '' }) => {
                   exit={{ opacity: 0 }}
                   className="space-y-12"
                 >
+                  {/* Debug info */}
+                  <div className="text-white text-sm opacity-75 px-4">
+                    📊 Showing {groupedCards.length} date groups with {filteredCards.length} total cards
+                  </div>
+
                   {groupedCards.map(([dateKey, cardsForDate], groupIndex) => (
                     <motion.div
                       key={dateKey}
@@ -289,14 +320,19 @@ export const Dashboard: React.FC<DashboardProps> = ({ searchQuery = '' }) => {
                       
                       {/* Cards Grid */}
                       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                        {cardsForDate.map((card) => (
-                          <div key={card.id}>
+                        {cardsForDate.map((card, cardIndex) => (
+                          <motion.div
+                            key={card.id}
+                            initial={{ opacity: 0, y: 10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ delay: (groupIndex * 0.1) + (cardIndex * 0.05) }}
+                          >
                             <CardPreview
                               card={card}
                               onToggleFavorite={toggleFavorite}
                               onClick={handleCardClick}
                             />
-                          </div>
+                          </motion.div>
                         ))}
                       </div>
                     </motion.div>
