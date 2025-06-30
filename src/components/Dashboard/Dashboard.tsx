@@ -12,6 +12,13 @@ interface DashboardProps {
   searchQuery?: string;
 }
 
+// Helper function to normalize dates to avoid timezone issues - moved to top level
+const normalizeDate = (date: string | Date): Date => {
+  const d = typeof date === 'string' ? new Date(date) : date;
+  // Create a new date using just the year, month, and day to avoid timezone issues
+  return new Date(d.getFullYear(), d.getMonth(), d.getDate());
+};
+
 export const Dashboard: React.FC<DashboardProps> = ({ searchQuery = '' }) => {
   const navigate = useNavigate();
   const { user } = useAuthStore();
@@ -38,28 +45,36 @@ export const Dashboard: React.FC<DashboardProps> = ({ searchQuery = '' }) => {
   const recentScrollRef = useRef<HTMLDivElement>(null);
   const tagsContainerRef = useRef<HTMLDivElement>(null);
 
-  // Get user-specific cards
+  // Get user-specific cards with normalized dates
   const userCards = useMemo(() => {
     if (!user) return [];
-    return cards.filter(card => card.userId === user.id);
+    return cards
+      .filter(card => card.userId === user.id)
+      .map(card => ({
+        ...card,
+        createdAt: normalizeDate(card.createdAt),
+        updatedAt: normalizeDate(card.updatedAt)
+      }));
   }, [cards, user]);
 
-  const recentCards = getRecentCards();
-  const favoriteCards = getFavoriteCards();
+  // Get cards with normalized dates for other functions
+  const recentCards = useMemo(() => {
+    return getRecentCards().map(card => ({
+      ...card,
+      createdAt: normalizeDate(card.createdAt),
+      updatedAt: normalizeDate(card.updatedAt)
+    }));
+  }, [getRecentCards]);
+
+  const favoriteCards = useMemo(() => {
+    return getFavoriteCards().map(card => ({
+      ...card,
+      createdAt: normalizeDate(card.createdAt),
+      updatedAt: normalizeDate(card.updatedAt)
+    }));
+  }, [getFavoriteCards]);
+
   const allTags = getAllTags();
-
-  // Helper function to normalize dates to avoid timezone issues
-  const normalizeDate = (date: string | Date): Date => {
-    const d = typeof date === 'string' ? new Date(date) : date;
-    // Create a new date using just the year, month, and day to avoid timezone issues
-    return new Date(d.getFullYear(), d.getMonth(), d.getDate());
-  };
-
-  // Update search in store when local search changes
-  useEffect(() => {
-    searchCards(localSearchQuery);
-  }, [localSearchQuery, searchCards]);
-
 
   // Calculate how many tags can fit in one row
   useEffect(() => {
@@ -84,6 +99,10 @@ export const Dashboard: React.FC<DashboardProps> = ({ searchQuery = '' }) => {
     return () => window.removeEventListener('resize', calculateVisibleTags);
   }, [allTags.length]);
 
+  // Update search in store when local search changes
+  useEffect(() => {
+    searchCards(localSearchQuery);
+  }, [localSearchQuery, searchCards]);
 
   // Update scroll button states
   const updateScrollButtons = () => {
@@ -133,11 +152,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ searchQuery = '' }) => {
 
   // Filter cards based on search query and selected tags
   const filteredCards = useMemo(() => {
-    let filtered = userCards.map(card => ({
-      ...card,
-      createdAt: normalizeDate(card.createdAt),
-      updatedAt: normalizeDate(card.updatedAt)
-    }));
+    let filtered = [...userCards]; // userCards already have normalized dates
 
     // Use the current search query (either from props, local state, or global state)
     const currentQuery = searchQuery || localSearchQuery || globalSearchQuery;
@@ -165,12 +180,10 @@ export const Dashboard: React.FC<DashboardProps> = ({ searchQuery = '' }) => {
     return filtered.sort((a, b) => b.updatedAt.getTime() - a.updatedAt.getTime());
   }, [userCards, searchQuery, localSearchQuery, globalSearchQuery, selectedTags]);
 
-
   const groupedCards = useMemo(() => {
     const groups: { [key: string]: Card[] } = {};
     
     filteredCards.forEach(card => {
-
       // Use the already normalized updatedAt date
       const dateKey = format(card.updatedAt, 'yyyy-MM-dd');
 
@@ -262,7 +275,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ searchQuery = '' }) => {
 
   const formatDateHeader = (dateString: string) => {
     const date = new Date(dateString);
-    const today = new Date();
+    const today = normalizeDate(new Date());
     const yesterday = new Date(today);
     yesterday.setDate(yesterday.getDate() - 1);
 
@@ -379,14 +392,12 @@ export const Dashboard: React.FC<DashboardProps> = ({ searchQuery = '' }) => {
                 </div>
               </div>
 
-
               {/* Tags - Dynamic count based on container width */}
               {allTags.length > 0 && (
                 <div className="flex justify-center">
                   <div ref={tagsContainerRef} className="w-full max-w-6xl">
                     <div className="flex items-center justify-center space-x-3 overflow-hidden">
                       {allTags.slice(0, visibleTagsCount).map(tag => (
-
                         <motion.button
                           key={tag}
                           whileHover={{ scale: 1.05, y: -2 }}
@@ -405,7 +416,6 @@ export const Dashboard: React.FC<DashboardProps> = ({ searchQuery = '' }) => {
                       {allTags.length > visibleTagsCount && (
                         <span className="flex-shrink-0 px-3 py-2 bg-white/5 text-slate-400 text-sm rounded-full border border-white/10">
                           +{allTags.length - visibleTagsCount} more
-
                         </span>
                       )}
                     </div>
@@ -456,7 +466,6 @@ export const Dashboard: React.FC<DashboardProps> = ({ searchQuery = '' }) => {
                   exit={{ opacity: 0 }}
                   className="space-y-6"
                 >
-
                   <h2 className="text-3xl font-bold text-white px-4">
                     🔍 Search Results
                   </h2>

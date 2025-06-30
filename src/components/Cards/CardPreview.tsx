@@ -9,6 +9,13 @@ interface CardPreviewProps {
   onClick: (card: Card) => void;
 }
 
+// Helper function to normalize dates to avoid timezone issues
+const normalizeDate = (date: Date | string): Date => {
+  const d = typeof date === 'string' ? new Date(date) : date;
+  // Create a new date using just the year, month, and day to avoid timezone issues
+  return new Date(d.getFullYear(), d.getMonth(), d.getDate());
+};
+
 export const CardPreview: React.FC<CardPreviewProps> = ({
   card,
   onToggleFavorite,
@@ -27,17 +34,8 @@ export const CardPreview: React.FC<CardPreviewProps> = ({
     onToggleFavorite(card.id);
   };
 
-
-  // Normalize date to avoid timezone issues - same as Dashboard
-  const normalizeDate = (date: Date | string): Date => {
-    const d = typeof date === 'string' ? new Date(date) : date;
-    // Create a new date using just the year, month, and day to avoid timezone issues
-    return new Date(d.getFullYear(), d.getMonth(), d.getDate());
-  };
-
-  // Use the same normalization as Dashboard for consistency
+  // Use the same normalization for consistency
   const displayDate = normalizeDate(card.updatedAt);
-
 
   return (
     <div
