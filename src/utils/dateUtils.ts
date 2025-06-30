@@ -13,7 +13,8 @@ export const formatDateHeader = (dateString: string): string => {
   const today = normalizeDate(new Date());
   const yesterday = new Date(today);
   yesterday.setDate(yesterday.getDate() - 1);
-  console.log('hhhhhhhhhhhhhhhhhh',dateString,date,today);
+  console.log('hhhhhhhhhhhhhhhhhh',dateString);
+  console.log(date,today);
   if (isSameDay(date, today)) {
     return 'Today';
   } else if (isSameDay(date, yesterday)) {
