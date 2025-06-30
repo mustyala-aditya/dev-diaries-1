@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Plus, User, LogOut, Sparkles } from 'lucide-react';
+import { Plus, User, LogOut, Code } from 'lucide-react';
 import { useAuthStore } from '../../store/authStore';
 
 export const Header: React.FC = () => {
@@ -29,7 +29,7 @@ export const Header: React.FC = () => {
                 transition={{ duration: 0.5 }}
                 className="p-2 bg-gradient-to-br from-blue-500 via-purple-500 to-pink-500 rounded-xl shadow-lg"
               >
-                <Sparkles className="h-6 w-6 text-white" />
+                <Code className="h-6 w-6 text-white" />
               </motion.div>
               <span className="text-2xl font-bold bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
                 Dev Diaries

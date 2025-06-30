@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { Eye, EyeOff, Mail, Lock, BookOpen } from 'lucide-react';
+import { Eye, EyeOff, Mail, Lock, Code } from 'lucide-react';
 import { useAuthStore } from '../../store/authStore';
 
 interface LoginFormData {
@@ -45,7 +45,7 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onToggleMode }) => {
       <div className="max-w-md w-full space-y-8">
         <div className="text-center">
           <div className="mx-auto h-16 w-16 bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl flex items-center justify-center mb-4 shadow-lg">
-            <BookOpen className="h-8 w-8 text-white" />
+            <Code className="h-8 w-8 text-white" />
           </div>
           <h2 className="text-3xl font-bold text-gray-900 mb-2">Welcome back</h2>
           <p className="text-gray-600">Sign in to your Dev Diaries account</p>

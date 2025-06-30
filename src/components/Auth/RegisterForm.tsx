@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { Eye, EyeOff, Mail, Lock, User, BookOpen, CheckCircle } from 'lucide-react';
+import { Eye, EyeOff, Mail, Lock, User, Code, CheckCircle } from 'lucide-react';
 import { useAuthStore } from '../../store/authStore';
 
 interface RegisterFormData {
@@ -89,7 +89,7 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ onToggleMode }) => {
       <div className="max-w-md w-full space-y-8">
         <div className="text-center">
           <div className="mx-auto h-16 w-16 bg-gradient-to-br from-purple-500 to-blue-600 rounded-2xl flex items-center justify-center mb-4 shadow-lg">
-            <BookOpen className="h-8 w-8 text-white" />
+            <Code className="h-8 w-8 text-white" />
           </div>
           <h2 className="text-3xl font-bold text-gray-900 mb-2">Create account</h2>
           <p className="text-gray-600">Start your Dev Diaries journey</p>

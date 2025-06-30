@@ -1,6 +1,6 @@
 import React, { useState, useMemo, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Plus, Search, Sparkles, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Plus, Search, Code, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { format, isSameDay } from 'date-fns';
 import { useCardStore } from '../../store/cardStore';
@@ -323,7 +323,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ searchQuery = '' }) => {
                 transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
                 className="mx-auto h-24 w-24 bg-gradient-to-br from-blue-500 via-purple-500 to-pink-500 rounded-3xl flex items-center justify-center mb-8 shadow-2xl"
               >
-                <Sparkles className="h-12 w-12 text-white" />
+                <Code className="h-12 w-12 text-white" />
               </motion.div>
               <h1 className="text-5xl font-bold bg-gradient-to-r from-white via-blue-100 to-purple-100 bg-clip-text text-transparent mb-6">
                 Welcome to Dev Diaries
