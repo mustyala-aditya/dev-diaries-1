@@ -1,3 +1,6 @@
+// Import date-fns functions at the top
+import { format, isSameDay } from 'date-fns';
+
 // Date utility functions
 export const normalizeDate = (date: string | Date): Date => {
   const d = typeof date === 'string' ? new Date(date) : date;
@@ -21,4 +24,4 @@ export const formatDateHeader = (dateString: string): string => {
 };
 
 // Re-export date-fns functions we use
-export { format, isSameDay } from 'date-fns';
+export { format, isSameDay };
