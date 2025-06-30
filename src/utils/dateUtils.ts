@@ -18,11 +18,6 @@ export const formatDateHeader = (dateString: string): string => {
   const yesterday = new Date(today);
   yesterday.setDate(yesterday.getDate() - 1);
   
-  console.log('dateString', dateString);
-  console.log('parsed date', date);
-  console.log('today', today);
-  console.log('yesterday', yesterday);
-  
   if (isSameDay(date, today)) {
     return 'Today';
   } else if (isSameDay(date, yesterday)) {

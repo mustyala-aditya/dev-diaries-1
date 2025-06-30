@@ -46,7 +46,6 @@ export const Dashboard: React.FC<DashboardProps> = ({ searchQuery = '' }) => {
   const userCards = useMemo(() => {
     if (!user) return [];
     const filtered = cards.filter(card => card.userId === user.id);
-    console.log('👤 User cards found:', filtered.length);
     return normalizeCardsDates(filtered);
   }, [cards, user]);
 
@@ -72,25 +71,16 @@ export const Dashboard: React.FC<DashboardProps> = ({ searchQuery = '' }) => {
   const filteredCards = useMemo(() => {
     const currentQuery = searchQuery || localSearchQuery || globalSearchQuery;
     
-    console.log('🔍 Filtering cards. Query:', currentQuery, 'Selected tags:', selectedTags);
-    console.log('📋 Starting with user cards:', userCards.length);
-    
     let filtered = filterCardsBySearch(userCards, currentQuery);
-    console.log('📋 After search filter:', filtered.length);
-    
     filtered = filterCardsByTags(filtered, selectedTags);
-    console.log('📋 After tag filter:', filtered.length);
     
     const sorted = filtered.sort((a, b) => b.updatedAt.getTime() - a.updatedAt.getTime());
-    console.log('📋 Final filtered and sorted cards:', sorted.length);
     
     return sorted;
   }, [userCards, searchQuery, localSearchQuery, globalSearchQuery, selectedTags]);
 
   const groupedCards = useMemo(() => {
-    console.log('🗂️ Creating grouped cards from filtered cards:', filteredCards.length);
     const grouped = groupCardsByDate(filteredCards);
-    console.log('🗂️ Grouped result:', grouped.length, 'groups');
     return grouped;
   }, [filteredCards]);
 
@@ -153,21 +143,6 @@ export const Dashboard: React.FC<DashboardProps> = ({ searchQuery = '' }) => {
       !favoriteIds.has(card.id) && !recentIds.has(card.id)
     );
   }, [filteredCards, favoriteCards, recentCards, activeView]);
-
-  // Debug logging for All Cards view
-  useEffect(() => {
-    if (activeView === 'all') {
-      console.log('📊 ALL CARDS VIEW DEBUG:');
-      console.log('- Total user cards:', userCards.length);
-      console.log('- Filtered cards:', filteredCards.length);
-      console.log('- Grouped cards:', groupedCards.length, 'groups');
-      console.log('- Groups detail:', groupedCards.map(([date, cards]) => ({
-        date,
-        count: cards.length,
-        titles: cards.map(c => c.title)
-      })));
-    }
-  }, [activeView, userCards.length, filteredCards.length, groupedCards]);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
@@ -295,11 +270,6 @@ export const Dashboard: React.FC<DashboardProps> = ({ searchQuery = '' }) => {
                   exit={{ opacity: 0 }}
                   className="space-y-12"
                 >
-                  {/* Debug info */}
-                  <div className="text-white text-sm opacity-75 px-4">
-                    📊 Showing {groupedCards.length} date groups with {filteredCards.length} total cards
-                  </div>
-
                   {groupedCards.map(([dateKey, cardsForDate], groupIndex) => (
                     <motion.div
                       key={dateKey}
