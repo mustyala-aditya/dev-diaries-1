@@ -42,6 +42,7 @@ export const groupCardsByDate = (cards: Card[]): [string, Card[]][] => {
   const groups: { [key: string]: Card[] } = {};
   
   cards.forEach(card => {
+    console.log(card);
     // Use consistent date formatting - YYYY-MM-DD format using our format utility
     const dateKey = format(card.updatedAt, 'yyyy-MM-dd');
     if (!groups[dateKey]) {
