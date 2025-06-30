@@ -1,5 +1,5 @@
 import { Card } from '../types';
-import { normalizeDate } from './dateUtils';
+import { normalizeDate, format } from './dateUtils';
 
 export const normalizeCardDates = (card: Card): Card => ({
   ...card,
@@ -42,7 +42,8 @@ export const groupCardsByDate = (cards: Card[]): [string, Card[]][] => {
   const groups: { [key: string]: Card[] } = {};
   
   cards.forEach(card => {
-    const dateKey = card.updatedAt.toISOString().split('T')[0]; // YYYY-MM-DD format
+    // Use consistent date formatting - YYYY-MM-DD format using our format utility
+    const dateKey = format(card.updatedAt, 'yyyy-MM-dd');
     if (!groups[dateKey]) {
       groups[dateKey] = [];
     }
