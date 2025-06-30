@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Plus, LucideIcon } from 'lucide-react';
+import { Plus, DivideIcon as LucideIcon } from 'lucide-react';
 
 interface EmptyStateProps {
   icon: LucideIcon;
